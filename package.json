@@ -5,6 +5,7 @@
   "main": "app.js",
   "repo": "https://github.com/deiga/loaxxor",
   "scripts": {
+    "start": "node --harmony app.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [
