@@ -1,0 +1,20 @@
+{
+  "name": "loaxxor",
+  "version": "0.0.1",
+  "description": "IRC bot for #loa",
+  "main": "app.js",
+  "repo": "https://github.com/deiga/loaxxor",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "IRC",
+    "bot",
+    "irc bot"
+  ],
+  "author": "Timo Sand <timo.j.sand@gmail.com>",
+  "license": "MIT",
+  "dependencies": {
+    "irc-js": "^2.0.0-beta.5"
+  }
+}
