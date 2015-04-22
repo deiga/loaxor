@@ -2,16 +2,17 @@
   "die": false,
   "flood-protection": false,
   "log": "all",
-  "nick": "loaxxor",
+  "nick": "loaxor",
   "server": {
-    "address": "irc.nebula.fi",
-    "port": 6667
+    "address": "ssl.irc.atw-inter.net",
+    "port": 7000,
+    "ssl": true
   },
   "user": {
     "hostname": "internet",
     "mode": "+iw",
     "password": null,
-    "realname": "LOAXXOR",
-    "username": "loaxxor"
+    "realname": "loaCHHHor",
+    "username": "loaxor"
   }
 }
