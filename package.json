@@ -2,7 +2,7 @@
   "name": "loaxxor",
   "version": "0.0.1",
   "description": "IRC bot for #loa",
-  "main": "app.js",
+  "main": "--harmony app.js",
   "repo": "https://github.com/deiga/loaxxor",
   "scripts": {
     "start": "node --harmony app.js",
