@@ -3,7 +3,7 @@
   "version": "0.0.1",
   "description": "IRC bot for #loa",
   "main": "--harmony app.js",
-  "repo": "https://github.com/deiga/loaxxor",
+  "repository": "https://github.com/deiga/loaxxor",
   "scripts": {
     "start": "node --harmony app.js",
     "test": "echo \"Error: no test specified\" && exit 1"
@@ -16,6 +16,8 @@
   "author": "Timo Sand <timo.j.sand@gmail.com>",
   "license": "MIT",
   "dependencies": {
-    "irc-js": "^2.0.0-beta.5"
+    "irc-js": "^2.0.0-beta.5",
+    "lugg": "^1.1.1",
+    "twitch.tv": "^1.0.0"
   }
 }

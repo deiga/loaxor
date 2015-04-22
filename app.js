@@ -7,7 +7,7 @@ var config = JSON.parse(fs.readFileSync("./config.json", "utf8"));
 var twitch = require("twitch.tv");
 var log = require("lugg")("app");
 
-var streamers = {}
+var streamers = {};
 
 var initialiseStreamers = function () {
   var channelNames = JSON.parse(fs.readFileSync("./channels.json", "utf8"));
