@@ -1,18 +1,25 @@
 {
-  "die": false,
-  "flood-protection": false,
-  "log": "all",
-  "nick": "loaxor",
-  "server": {
-    "address": "ssl.irc.atw-inter.net",
-    "port": 7000,
-    "ssl": true
+  "irc": {
+    "die": false,
+    "flood-protection": false,
+    "log": "all",
+    "nick": "loaxor",
+    "server": {
+      "address": "ssl.irc.atw-inter.net",
+      "port": 7000,
+      "ssl": true
+    },
+    "user": {
+      "hostname": "internet",
+      "mode": "+iw",
+      "password": null,
+      "realname": "loaCHHHor",
+      "username": "loaxor"
+    }
   },
-  "user": {
-    "hostname": "internet",
-    "mode": "+iw",
-    "password": null,
-    "realname": "loaCHHHor",
-    "username": "loaxor"
+  "titch": {
+    "ua": "loaxor by deiga",
+    "apiVersion": "3",
+    "clientID": ""
   }
 }

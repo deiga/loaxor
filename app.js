@@ -1,36 +1,28 @@
-'use strict';
+"use strict";
 
-var fs = require('fs');
-var irc = require('irc-js');
-var config = JSON.parse(fs.readFileSync('./config.json', 'utf8'));
-var twitch = require('twitch.tv');
+require("lugg").init();
+var fs = require("fs");
+var irc = require("irc-js");
+var config = JSON.parse(fs.readFileSync("./config.json", "utf8"));
+var twitch = require("twitch.tv");
+var log = require("lugg")("app");
 
-var twitchConfig = {
-  ua: 'loaxor by deiga',
-  apiVersion: '3',
-  clientID: ''
-};
+var streamers = {}
 
-var streamers = {
-  deiga: {
-    live: false
-  },
-  eiwaz: {
-    live: false
-  },
-  seqone: {
-    live: false
-  },
-  peacemakex: {
-    live: false
-  }
+var initialiseStreamers = function () {
+  var channelNames = JSON.parse(fs.readFileSync("./channels.json", "utf8"));
+  channelNames.forEach(function (channelName) {
+    if (!streamers.hasOwnProperty(channelName)) {
+      streamers[channelName] = {live: false};
+    }
+  });
 };
 
 var updateStreamersStatus = function (channel) {
-  console.log('Updating...');
-  twitch('streams?channel=deiga,eiwaz,peacemakex,seqone', twitchConfig, function (err, res) {
+  console.log("Updating...");
+  twitch("streams?channel=deiga,eiwaz,peacemakex,seqone", config.twitch, function (err, res) {
     if (err) {
-      console.log('ERROR Something bad happened :(', err);
+      log.error("Something bad happened :(", err);
       return;
     }
     var streams = res.streams;
@@ -39,29 +31,33 @@ var updateStreamersStatus = function (channel) {
       var streamer = stream.channel.name;
       onlineStreamers.push(streamer);
       if (!streamers[streamer].live) {
-        console.log(streamer + ' just went live!');
-        channel.say(streamer + ' just went live!');
+        log.info(streamer + " just went live!");
+        channel.say(streamer + " began streaming " + stream.game + ", " + stream.channel.status + ": " + stream.channel.url);
       }
       streamers[streamer].live = true;
     });
     var offlineStremers = Object.keys(streamers).filter(function(i) {return onlineStreamers.indexOf(i) < 0;});
     offlineStremers.forEach(function (streamer) {
-      streamers[streamer].live = false;
-      channel.say(streamer + ' just went offline!');
+      if (streamers[streamer].live) {
+        streamers[streamer].live = false;
+        channel.say(streamer + " stopped streaming");
+      }
     });
-    console.log(streamers);
+    log.debug(streamers);
   });
 };
-var bot = new irc.Client(config);
+
+var bot = new irc.Client(config.irc);
+initialiseStreamers();
 
 bot.connect(function (client) {
-  console.log('INFO loaxor connected');
-  client.join('#leftoutsidealone', function (err, channel) {
+  log.info("loaxor connected");
+  client.join("#leftoutsidealone", function (err, channel) {
     if (err) {
-      console.log('ERROR Could not join channel :(', err);
+      log.error("Could not join channel :(", err);
       return;
     }
-    console.log('INFO Joined #leftoutsidealone');
+    log.info("Joined #leftoutsidealone");
     setInterval(updateStreamersStatus, 30000, channel);
   });
 
