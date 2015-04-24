@@ -60,5 +60,13 @@ bot.connect(function (client) {
     log.info("Joined #leftoutsidealone");
     setInterval(updateStreamersStatus, 30000, channel);
   });
+});
 
+bot.match("INVITE", function(msg) {
+  msg.reply("Joining.");
+  bot.join(msg.params[1]);
+});
+
+bot.match(/.*/, function(msg) {
+  log.debug(msg.from, msg.params);
 });
