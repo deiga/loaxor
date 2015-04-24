@@ -1,6 +1,6 @@
 {
   "irc": {
-    "die": false,
+    "die": true,
     "flood-protection": false,
     "log": "all",
     "nick": "loaxor",
