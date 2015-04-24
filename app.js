@@ -10,7 +10,7 @@ var log = require("lugg")("app");
 var streamers = {};
 
 var initialiseStreamers = function () {
-  var channelNames = JSON.parse(fs.readFileSync("./channels.json", "utf8"));
+  var channelNames = config.channels;
   channelNames.forEach(function (channelName) {
     if (!streamers.hasOwnProperty(channelName)) {
       streamers[channelName] = {live: false};
@@ -19,8 +19,8 @@ var initialiseStreamers = function () {
 };
 
 var updateStreamersStatus = function (channel) {
-  console.log("Updating...");
-  twitch("streams?channel=deiga,eiwaz,peacemakex,seqone", config.twitch, function (err, res) {
+  log.info("Updating...");
+  twitch("streams?channel=" + config.channels, config.twitch, function (err, res) {
     if (err) {
       log.error("Something bad happened :(", err);
       return;
@@ -36,7 +36,7 @@ var updateStreamersStatus = function (channel) {
       }
       streamers[streamer].live = true;
     });
-    var offlineStremers = Object.keys(streamers).filter(function(i) {return onlineStreamers.indexOf(i) < 0;});
+    var offlineStremers = config.channels.filter(function(streamer) { return onlineStreamers.indexOf(streamer) < 0; });
     offlineStremers.forEach(function (streamer) {
       if (streamers[streamer].live) {
         streamers[streamer].live = false;

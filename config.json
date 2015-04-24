@@ -17,9 +17,15 @@
       "username": "loaxor"
     }
   },
-  "titch": {
+  "twitch": {
     "ua": "loaxor by deiga",
     "apiVersion": "3",
     "clientID": ""
-  }
+  },
+  "channels": [
+    "deiga",
+    "eiwaz",
+    "seqone",
+    "peacemakex"
+  ]
 }
