@@ -5,9 +5,8 @@
     "log": "all",
     "nick": "loaxor",
     "server": {
-      "address": "ssl.irc.atw-inter.net",
-      "port": 7000,
-      "ssl": true
+      "address": "irc.nbl.fi",
+      "port": 6667
     },
     "user": {
       "hostname": "internet",
