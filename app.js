@@ -40,7 +40,6 @@ var updateStreamersStatus = function (channel) {
     offlineStremers.forEach(function (streamer) {
       if (streamers[streamer].live) {
         streamers[streamer].live = false;
-        channel.say(streamer + " stopped streaming");
       }
     });
     log.debug(streamers);
