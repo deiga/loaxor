@@ -43,7 +43,7 @@ var updateStreamersStatus = function (channel) {
       var streamer = stream.channel.name;
       onlineStreamers.push(streamer);
       var streamerLiveStatus = redisClient.hget("streamer:" + streamer, "live");
-      log.debug("Streamer live status:", streaer, streamerLiveStatus);
+      log.debug("Streamer live status:", streamer, streamerLiveStatus);
       if (!streamerLiveStatus) {
         log.info(streamer + " just went live!");
         channel.say(streamer + " began streaming " + stream.game + ", " + stream.channel.status + ": " + stream.channel.url);
