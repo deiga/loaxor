@@ -28,6 +28,10 @@ var initialiseStreamers = function (args) {
   log.info("Initialisation done");
 };
 
+var streamerLiveStatus = function (streamer) {
+  return redisClient.hget("streamer:" + streamer, "live") === "true";
+};
+
 var updateStreamersStatus = function (channel) {
   log.info("Updating...");
   twitch("streams?channel=" + config.channels, config.twitch, function (err, res) {
@@ -42,7 +46,7 @@ var updateStreamersStatus = function (channel) {
     streams.forEach( function (stream) {
       var streamer = stream.channel.name;
       onlineStreamers.push(streamer);
-      var streamerLiveStatus = redisClient.hget("streamer:" + streamer, "live");
+      var streamerLiveStatus = streamerLiveStatus(streamer);
       log.debug("Streamer live status:", streamer, streamerLiveStatus);
       if (!streamerLiveStatus) {
         log.info(streamer + " just went live!");
@@ -52,7 +56,7 @@ var updateStreamersStatus = function (channel) {
     });
     var offlineStremers = config.channels.filter(function(streamer) { return onlineStreamers.indexOf(streamer) < 0; });
     offlineStremers.forEach(function (streamer) {
-      if (redisClient.hget("streamer:" + streamer, "live")) {
+      if (streamerLiveStatus(streamer)) {
         redisClient.hset("streamer:" + streamer, "live", false);
       }
     });
