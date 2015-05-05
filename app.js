@@ -21,9 +21,11 @@ var initialiseStreamers = function (args) {
   var streamerKeys = _.map(args, function (streamerName) { return "streamer:" + streamerName; });
   redisClient.sadd("streamers", streamerKeys);
   _.each(streamerKeys, function (key) {
-    if (!redisClient.exists(key)) {
-      redisClient.hset(key, "live", false);
-    }
+    redisClient.exists(key, function(err, result) {
+      if (!result) {
+        redisClient.hset(key, "live", false);
+      }
+    });
   });
   log.info("Initialisation done");
 };
@@ -62,11 +64,11 @@ var updateStreamersStatus = function (channel) {
       }
     });
     var streamers = redisClient.smembers("streamers");
-    var output = [];
     _.each(streamers, function (streamer) {
-      output.push(redisClient.hgetall(streamer));
+      redisClient.hgetall(streamer, function (err, results) {
+        log.debug("Streamer output:", results);
+      });
     });
-    log.debug("Streamers output: ", output);
   });
 };
 
