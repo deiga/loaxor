@@ -21,7 +21,7 @@ var initialiseStreamers = function (args) {
   var streamerKeys = _.map(args, function (streamerName) { return "streamer:" + streamerName; });
   redisClient.sadd("streamers", streamerKeys);
   _.each(streamerKeys, function (key) {
-    redisClient.exists(key, function(err, result) {
+    redisClient.exists(key, function(_, result) {
       if (!result) {
         redisClient.hset(key, "live", false);
       }
@@ -30,9 +30,10 @@ var initialiseStreamers = function (args) {
   log.info("Initialisation done");
 };
 
-var streamerLiveStatus = function (streamer) {
-  var status = redisClient.hget("streamer:" + streamer, "live");
-  return typeof status === "boolean" ? status : status === "true";
+var streamerLiveStatus = function (streamer, cb) {
+  redisClient.hget("streamer:" + streamer, "live", function (_, status) {
+    cb(typeof status === "boolean" ? status : status === "true");
+  });
 };
 
 var updateStreamersStatus = function (channel) {
@@ -49,7 +50,10 @@ var updateStreamersStatus = function (channel) {
     streams.forEach( function (stream) {
       var streamer = stream.channel.name;
       onlineStreamers.push(streamer);
-      var liveStatus = streamerLiveStatus(streamer);
+      var liveStatus = null;
+      streamerLiveStatus(streamer, function (status) {
+        liveStatus = status;
+      });
       log.debug("Streamer live status:", streamer, liveStatus);
       if (!liveStatus) {
         log.info(streamer + " just went live!");
@@ -59,13 +63,18 @@ var updateStreamersStatus = function (channel) {
     });
     var offlineStremers = config.channels.filter(function(streamer) { return onlineStreamers.indexOf(streamer) < 0; });
     offlineStremers.forEach(function (streamer) {
-      if (streamerLiveStatus(streamer)) {
+      var liveStatus = null;
+      streamerLiveStatus(streamer, function (status) {
+        liveStatus = status;
+      });
+      if (liveStatus) {
         redisClient.hset("streamer:" + streamer, "live", false);
       }
     });
     var streamers = redisClient.smembers("streamers");
+    log.debug("Streamers:", streamers);
     _.each(streamers, function (streamer) {
-      redisClient.hgetall(streamer, function (err, results) {
+      redisClient.hgetall(streamer, function (_, results) {
         log.debug("Streamer output:", results);
       });
     });
@@ -86,7 +95,7 @@ bot.connect(function (client) {
     setInterval(updateStreamersStatus, 30000, channel);
   });
 });
-
+log.info(streamerLiveStatus("streamer:deiga", console.log));
 bot.match("INVITE", function(msg) {
   msg.reply("Joining.");
   bot.join(msg.params[1]);
