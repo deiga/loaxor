@@ -17,7 +17,9 @@
   "license": "MIT",
   "dependencies": {
     "irc-js": "^2.0.0-beta.5",
+    "lodash": "^3.8.0",
     "lugg": "^1.1.1",
+    "redis": "^0.12.1",
     "twitch.tv": "^1.0.0"
   },
   "engines": {
