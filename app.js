@@ -46,9 +46,9 @@ var updateStreamersStatus = function (channel) {
     streams.forEach( function (stream) {
       var streamer = stream.channel.name;
       onlineStreamers.push(streamer);
-      var streamerLiveStatus = streamerLiveStatus(streamer);
-      log.debug("Streamer live status:", streamer, streamerLiveStatus);
-      if (!streamerLiveStatus) {
+      var liveStatus = streamerLiveStatus(streamer);
+      log.debug("Streamer live status:", streamer, liveStatus);
+      if (!liveStatus) {
         log.info(streamer + " just went live!");
         channel.say(streamer + " began streaming " + stream.game + ", " + stream.channel.status + ": " + stream.channel.url);
       }
