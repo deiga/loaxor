@@ -29,7 +29,8 @@ var initialiseStreamers = function (args) {
 };
 
 var streamerLiveStatus = function (streamer) {
-  return redisClient.hget("streamer:" + streamer, "live") === "true";
+  var status = redisClient.hget("streamer:" + streamer, "live");
+  return typeof status === "boolean" ? status : status === "true";
 };
 
 var updateStreamersStatus = function (channel) {
@@ -50,7 +51,7 @@ var updateStreamersStatus = function (channel) {
       log.debug("Streamer live status:", streamer, liveStatus);
       if (!liveStatus) {
         log.info(streamer + " just went live!");
-        channel.say(streamer + " began streaming " + stream.game + ", " + stream.channel.status + ": " + stream.channel.url);
+        channel.say(streamer + " began streaming '" + stream.game + "', " + stream.channel.status + ": " + stream.channel.url);
       }
       redisClient.hset("streamer:" + streamer, "live", true);
     });
