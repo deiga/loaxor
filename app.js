@@ -3,7 +3,7 @@
 require("lugg").init();
 var fs = require("fs");
 var irc = require("irc-js");
-var config = JSON.parse(fs.readFileSync("./config.json", "utf8"));
+var config = require("config");
 var twitch = require("twitch.tv");
 var log = require("lugg")("app");
 var redis = require("redis");

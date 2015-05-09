@@ -1,4 +1,5 @@
 {
+  "redisurl": "redis://rediscloud:OGJfzLh8nXfC2V3i@pub-redis-19650.eu-west-1-1.2.ec2.garantiadata.com:19650",
   "irc": {
     "die": true,
     "flood-protection": false,

@@ -16,6 +16,7 @@
   "author": "Timo Sand <timo.j.sand@gmail.com>",
   "license": "MIT",
   "dependencies": {
+    "config": "^1.13.0",
     "irc-js": "^2.0.0-beta.5",
     "lodash": "^3.8.0",
     "lugg": "^1.1.1",
