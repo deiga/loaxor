@@ -1,7 +1,6 @@
 "use strict";
 
 require("lugg").init();
-var fs = require("fs");
 var irc = require("irc-js");
 var config = require("config");
 var twitch = require("twitch.tv");
@@ -94,11 +93,22 @@ bot.connect(function (client) {
     setInterval(updateStreamersStatus, 30000, channel);
   });
 });
-bot.match("INVITE", function(msg) {
+
+bot.match("INVITE", function (msg) {
   msg.reply("Joining.");
   bot.join(msg.params[1]);
 });
 
-bot.match(/.*/, function(msg) {
-  log.debug(msg.from, msg.params);
+bot.match(/.*/, function (msg) {
+  // log.debug(msg.from, msg.params);
+});
+
+bot.match(/§(.*?)(.*)/, function (msg, cmd, args) {
+  log.debug(msg, cmd, args);
+  global[cmd](args);
+});
+
+process.on('uncaughtException', function (err) {
+  log.error(err);
+  throw err;
 });
