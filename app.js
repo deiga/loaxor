@@ -38,17 +38,33 @@ var streamerLiveStatus = function (streamer, cb) {
   });
 };
 
+var reportStreamerStatus = function (cb) {
+  log.debug("Streamers:", channels);
+  _.each(channels, function (streamer) {
+    redisClient.hgetall("streamer:"+streamer, function (err, results) {
+      log.debug("Streamer output:", streamer, results);
+      var status = "offline",
+        info = "";
+      if (typeof results.live === "boolean" ? results.live : results.live === "true") {
+          status = "live";
+          info = ", playing '" + results.game + "' with title '" + results.title + "', " + results.url;
+      }
+      cb("Channel: " + streamer + ", " + status + info);
+    });
+  });
+}
+
 var updateStreamersStatus = function (channel) {
-  log.info("Updating...");
+  log.info("Updating streams status");
   twitch("streams?channel=" + config.channels, config.twitch, function (err, res) {
     if (err) {
       log.error("Something bad happened :(", err);
       return;
     }
-    log.debug("Online channels response: ", res);
+    log.debug("Online channels response:", res);
 
     var streams = res.streams;
-    log.debug("Online channels streams: ", streams);
+    log.debug("Online channels streams:", streams);
     var onlineStreamers = [];
     _.each(streams, function (stream) {
       var streamer = stream.channel.name;
@@ -59,24 +75,31 @@ var updateStreamersStatus = function (channel) {
           log.info(streamer + " just went live!");
           channel.say(streamer + " began streaming '" + stream.game + "', " + stream.channel.status + ": " + stream.channel.url);
         }
-        redisClient.hset("streamer:" + streamer, "live", true);
+        redisClient.hmset("streamer:" + streamer, "live", true, "game", stream.game, "title", stream.channel.status, "url", stream.channel.url);
       });
     });
 
     var offlineStreamers = channels.filter(function(streamer) { return onlineStreamers.indexOf(streamer) < 0; });
     log.debug("Offline streamers:", offlineStreamers);
     _.each(offlineStreamers, function (streamer) {
-        redisClient.hset("streamer:" + streamer, "live", false);
+        redisClient.hmset("streamer:" + streamer, "live", false, "game", null, "title", null);
     });
 
-    log.debug("Streamers:", channels);
-    _.each(channels, function (streamer) {
-      redisClient.hgetall("streamer:"+streamer, function (err, results) {
-        log.debug("Streamer output:", streamer, results);
-      });
-    });
+    reportStreamerStatus(log.info.bind(log));
   });
 };
+
+var botCommands = {};
+
+botCommands.help = function (cb) {
+  cb("loaxor serves");
+  cb("All available commands: " + _.map(Object.keys(botCommands), function (cmd) { return "§"+cmd; }).join(", "));
+};
+
+botCommands.streams = function (cb) {
+  reportStreamerStatus(cb);
+};
+
 
 var bot = new irc.Client(config.irc);
 initialiseStreamers(config.channels);
@@ -99,16 +122,18 @@ bot.match("INVITE", function (msg) {
   bot.join(msg.params[1]);
 });
 
-bot.match(/.*/, function (msg) {
-  // log.debug(msg.from, msg.params);
+_.each(Object.keys(botCommands), function (botCmd) {
+  var re = new RegExp("§"+botCmd);
+  bot.match(re, function (msg) {
+    log.debug(botCmd, msg.client.user, msg.from, msg.params);
+    botCommands[botCmd](msg.reply.bind(msg));
+  });
+
 });
 
-bot.match(/§(.*?)(.*)/, function (msg, cmd, args) {
-  log.debug(msg, cmd, args);
-  global[cmd](args);
-});
-
-process.on('uncaughtException', function (err) {
+process.on("uncaughtException", function (err) {
   log.error(err);
-  throw err;
+  if (err.message.indexOf("Property ") === -1 || err.message.indexOf(" is not a function") === -1) {
+    throw err;
+  }
 });
