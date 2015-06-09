@@ -15,6 +15,7 @@ redisClient.auth(redisURL.auth.split(":")[1]);
 var channels = [];
 
 var initialiseStreamers = function (args) {
+  if (args.length === 0) { return; }
   log.info("Initialising streamers");
   var streamerKeys = _.map(args, function (streamerName) { return "streamer:" + streamerName; });
   redisClient.sadd("streamers", streamerKeys);
@@ -49,10 +50,15 @@ var reportStreamerStatus = function (cb) {
           status = "live";
           info = ", playing '" + results.game + "' with title '" + results.title + "', " + results.url;
       }
-      cb("Channel: " + streamer + ", " + status + info);
+
+      if (typeof cb === "undefined") {
+        log.debug("Channel: " + streamer + ", " + status + info);
+      } else {
+        cb("Channel: " + streamer + ", " + status + info);
+      }
     });
   });
-}
+};
 
 var updateStreamersStatus = function (channel) {
   log.info("Updating streams status");
@@ -91,15 +97,28 @@ var updateStreamersStatus = function (channel) {
 
 var botCommands = {};
 
-botCommands.help = function (cb) {
+botCommands.help = function (args, cb) {
   cb("loaxor serves");
   cb("All available commands: " + _.map(Object.keys(botCommands), function (cmd) { return "§"+cmd; }).join(", "));
 };
 
-botCommands.streams = function (cb) {
-  reportStreamerStatus(cb);
-};
+botCommands.streams = function (args, cb) {
+  var argArr = [];
+  if (args instanceof String || typeof args === "string") {
+    argArr = args.split(" ");
+  } else if (args instanceof Array) {
+    argArr = args;
+  }
 
+  log.debug("Streams arguments", argArr);
+  switch (argArr.shift()) {
+    case "add":
+      initialiseStreamers(argArr);
+      break;
+    default:
+      reportStreamerStatus(cb);
+  }
+};
 
 var bot = new irc.Client(config.irc);
 initialiseStreamers(config.channels);
@@ -123,10 +142,10 @@ bot.match("INVITE", function (msg) {
 });
 
 _.each(Object.keys(botCommands), function (botCmd) {
-  var re = new RegExp("§"+botCmd);
-  bot.match(re, function (msg) {
-    log.debug(botCmd, msg.client.user, msg.from, msg.params);
-    botCommands[botCmd](msg.reply.bind(msg));
+  var re = new RegExp("§" + botCmd + "(?: (.*))*");
+  bot.match(re, function (msg, args) {
+    log.debug(botCmd, msg.client.user, msg.from, msg.params, args);
+    botCommands[botCmd](args, msg.reply.bind(msg));
   });
 
 });
