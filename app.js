@@ -33,6 +33,14 @@ var initialiseStreamers = function (args) {
   log.info("Initialisation done");
 };
 
+var removeStreamers = function (args) {
+  if (args.length === 0) { return; }
+  log.info("Removing streamers: ", args);
+  var streamerKeys = _.map(args, function (streamerName) { return "streamer:" + streamerName; });
+  redisClient.srem("streamers", streamerKeys);
+  redisClient.del(streamerKeys);
+}
+
 var streamerLiveStatus = function (streamer, cb) {
   redisClient.hget("streamer:" + streamer, "live", function (err, status) {
     cb(typeof status === "boolean" ? status : status === "true");
@@ -130,6 +138,9 @@ initBotCommand('streams', function (args, cb) {
   switch (argArr.shift()) {
     case "add":
       initialiseStreamers(argArr);
+      break;
+    case "del":
+      removeStreamers(argArr);
       break;
     default:
       reportStreamerStatus(cb);
