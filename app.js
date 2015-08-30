@@ -95,13 +95,30 @@ var updateStreamersStatus = function (channel) {
 };
 
 var botCommands = {};
+var botHelp = {};
 
-botCommands.help = function (args, cb) {
-  cb("loaxor serves");
-  cb("All available commands: " + _.map(Object.keys(botCommands), function (cmd) { return "§"+cmd; }).join(", "));
-};
+var initBotCommand = function (cmdName, cmdFunction, cmdHelp) {
+    botCommands[cmdName] = cmdFunction;
+    botHelp[cmdName] = cmdHelp;
+}
 
-botCommands.streams = function (args, cb) {
+initBotCommand('help', function (args, cb) {
+  var argArr = [];
+  if (args instanceof String || typeof args === "string") {
+    argArr = args.split(" ");
+  } else if (args instanceof Array) {
+    argArr = args;
+  }
+  _.each(argArr, function (arg) {
+    cb(botHelp[arg])
+  });
+
+  if (argArr.length === 0) {
+    cb("All available commands: " + _.map(Object.keys(botHelp), function (cmd) { return "§"+cmd; }).join(", "));
+  }
+}, "Provides help about the bot and its commands.");
+
+initBotCommand('streams', function (args, cb) {
   var argArr = [];
   if (args instanceof String || typeof args === "string") {
     argArr = args.split(" ");
@@ -117,7 +134,7 @@ botCommands.streams = function (args, cb) {
     default:
       reportStreamerStatus(cb);
   }
-};
+}, "Lists channel statuses when called without arguments. Otherwise accepts 'add' or 'del' with one or more channel names.");
 
 var bot = new irc.Client(config.irc);
 initialiseStreamers(config.channels);
