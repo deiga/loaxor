@@ -16,7 +16,7 @@ var channels = [];
 
 var initialiseStreamers = function (args) {
   if (args.length === 0) { return; }
-  log.info("Initialising streamers");
+  log.info("Initialising streamers: ", args);
   var streamerKeys = _.map(args, function (streamerName) { return "streamer:" + streamerName; });
   redisClient.sadd("streamers", streamerKeys);
   _.each(streamerKeys, function (key) {
@@ -52,7 +52,6 @@ var reportStreamerStatus = function (cb) {
       }
 
       if (typeof cb === "undefined") {
-        log.debug("Channel: " + streamer + ", " + status + info);
       } else {
         cb("Channel: " + streamer + ", " + status + info);
       }
