@@ -18,7 +18,7 @@
   "dependencies": {
     "config": "^1.13.0",
     "irc-js": "^2.0.0-beta.5",
-    "lodash": "^4.17.5",
+    "lodash": "4.17.5",
     "lugg": "^1.1.1",
     "redis": "^2.6.5",
     "twitch.tv": "^2.1.0"
