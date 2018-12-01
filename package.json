@@ -6,7 +6,7 @@
   "repository": "https://github.com/deiga/loaxxor",
   "scripts": {
     "start": "node --harmony app.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\""
   },
   "keywords": [
     "IRC",
@@ -22,9 +22,5 @@
     "lugg": "^3.0.0",
     "redis": "^2.6.5",
     "twitch.tv": "^2.1.0"
-  },
-  "engines": {
-    "node": "~0.10",
-    "npm": "~2"
   }
 }
