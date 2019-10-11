@@ -16,11 +16,11 @@
   "author": "Timo Sand <timo.j.sand@gmail.com>",
   "license": "MIT",
   "dependencies": {
-    "config": "^3.0.0",
-    "irc-js": "^2.0.0-beta.5",
-    "lodash": "^4.17.5",
-    "lugg": "^3.0.0",
-    "redis": "^2.6.5",
-    "twitch.tv": "^2.1.0"
+    "config": "3.2.3",
+    "irc-js": "2.0.0-beta.5",
+    "lodash": "4.17.15",
+    "lugg": "3.0.0",
+    "redis": "2.8.0",
+    "twitch.tv": "2.1.0"
   }
 }
